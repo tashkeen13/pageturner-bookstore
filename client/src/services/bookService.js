@@ -12,16 +12,21 @@ const allowDemoCatalog = import.meta.env.DEV || import.meta.env.VITE_ENABLE_DEMO
  * Client errors are not hidden by the fallback.
  */
 export async function fetchBooks(params) {
+  let response;
   try {
-    const response = await api.get('/books', { params, timeout: 60000 });
-    if (String(params?.genre || '').toLowerCase() === 'urdu fiction' && response.data.books.length === 0) {
-      return { ...getDemoBooks(params), isDemo: true };
-    }
-    return { ...response.data, isDemo: false };
+    response = await api.get('/books', { params, timeout: 60000 });
   } catch (error) {
     if (!allowDemoCatalog || !isApiUnavailable(error)) throw error;
     return { ...getDemoBooks(params), isDemo: true };
   }
+
+  if (!Array.isArray(response.data?.books)) {
+    throw new Error('The books service returned an unexpected response. Please check the API configuration.');
+  }
+  if (String(params?.genre || '').toLowerCase() === 'urdu fiction' && response.data.books.length === 0) {
+    return { ...getDemoBooks(params), isDemo: true };
+  }
+  return { ...response.data, isDemo: false };
 }
 
 export async function fetchGenres() {
