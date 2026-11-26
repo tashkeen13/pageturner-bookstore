@@ -21,6 +21,7 @@ dist-ssr
 *.sqlite-*
 server/uploads/*
 !server/uploads/.gitkeep
+Microsoft/Windows/PowerShell/ModuleAnalysisCache
 
 # Editor directories and files
 .vscode/*
